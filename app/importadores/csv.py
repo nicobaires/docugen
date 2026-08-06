@@ -5,6 +5,8 @@ from app.importadores.comunes import crear_df_filtrado, listar_campos, mostrar_d
 __all__ = ["leer_archivo", "listar_campos", "crear_df_filtrado", "mostrar_df_campos"]
 
 
-def leer_archivo(ruta_archivo):
+def leer_archivo(ruta_archivo, hoja=None):
+    if hoja:
+        raise ValueError("Los archivos CSV no tienen hojas.")
     df = pd.read_csv(ruta_archivo, sep=None, engine="python")
     return df

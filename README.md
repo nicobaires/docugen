@@ -5,9 +5,10 @@ Automatiza la generación de documentos PDF a partir de datos en Excel, CSV u OD
 ## Uso
 
 ```bash
-python main.py                         # datos por defecto (data/personas.xlsx, estado Aprobado)
-python main.py --estado "En curso"     # filtrar por otro estado
-python main.py --archivo ruta.csv --salida salida/ --estado Reprobado
+python main.py                                    # datos por defecto (data/personas.csv, columna Estado, valor Aprobado)
+python main.py --columna Curso --valor Python     # filtrar por otra columna y valor
+python main.py --hoja Hoja2 --archivo datos.xlsx  # elegir una hoja del libro (xlsx/ods)
+python main.py --info --archivo datos.ods         # ver columnas, cantidad de registros y vista previa
 ```
 
 El formato del archivo se detecta automáticamente por extensión: `.xlsx`, `.xls`, `.csv` y `.ods`.
@@ -17,6 +18,10 @@ Los PDFs se guardan en `salida/` (creada automáticamente).
 ## Estructura
 
 Ver `ESTRUCTURA.md`.
+
+## Roadmap
+
+Ver [ROADMAP.md](ROADMAP.md).
 
 ## Dependencias
 
