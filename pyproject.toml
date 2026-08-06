@@ -1,7 +1,7 @@
 [project]
-name = "certificado"
+name = "docugen"
 version = "0.1.0"
-description = "Add your description here"
+description = "Automatiza la generación de documentos PDF a partir de datos (Excel, CSV, ODS)"
 readme = "README.md"
 requires-python = ">=3.14"
 dependencies = [

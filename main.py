@@ -31,7 +31,7 @@ def elegir_importador(ruta_archivo):
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Generador de certificados PDF")
+    parser = argparse.ArgumentParser(description="Generador de documentos PDF a partir de datos")
     parser.add_argument(
         "--archivo",
         default=str(DEFAULT_DATOS),
@@ -45,7 +45,7 @@ def main():
     parser.add_argument(
         "--salida",
         default=str(DEFAULT_SALIDA),
-        help="Carpeta donde se guardan los certificados",
+        help="Carpeta donde se guardan los documentos",
     )
     args = parser.parse_args()
 
@@ -64,7 +64,7 @@ def main():
 
     archivos = generar_pdfs(df_filtrado, args.salida)
 
-    print(f"Se generaron {len(archivos)} certificados en '{args.salida}':")
+    print(f"Se generaron {len(archivos)} documentos en '{args.salida}':")
     for archivo in archivos:
         print(f"  - {archivo.name}")
 

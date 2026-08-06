@@ -16,7 +16,7 @@ def _crear_estilos():
     styles = getSampleStyleSheet()
 
     style_titulo = ParagraphStyle(
-        "TituloCertificado",
+        "TituloDocumento",
         parent=styles["Heading1"],
         fontName="Helvetica-Bold",
         fontSize=26,
@@ -26,7 +26,7 @@ def _crear_estilos():
     )
 
     style_cuerpo = ParagraphStyle(
-        "CuerpoCertificado",
+        "CuerpoDocumento",
         parent=styles["Normal"],
         fontName="Helvetica",
         fontSize=13,

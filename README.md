@@ -1,6 +1,6 @@
-# certificado
+# docugen
 
-Generador de certificados PDF a partir de un archivo Excel.
+Automatiza la generación de documentos PDF a partir de datos en Excel, CSV u ODS.
 
 ## Uso
 
