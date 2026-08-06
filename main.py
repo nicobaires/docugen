@@ -2,11 +2,32 @@ import argparse
 from pathlib import Path
 
 from app.generadores.pdf import generar_pdfs
-from app.importadores.excel import crear_df_filtrado, leer_archivo
+from app.importadores import csv as importador_csv
+from app.importadores import excel as importador_excel
+from app.importadores import ods as importador_ods
+from app.importadores.comunes import crear_df_filtrado
 
 PROYECTO = Path(__file__).resolve().parent
 DEFAULT_DATOS = PROYECTO / "data" / "personas.xlsx"
 DEFAULT_SALIDA = PROYECTO / "salida"
+
+IMPORTADORES = {
+    ".xlsx": importador_excel,
+    ".xls": importador_excel,
+    ".csv": importador_csv,
+    ".ods": importador_ods,
+}
+
+
+def elegir_importador(ruta_archivo):
+    extension = Path(ruta_archivo).suffix.lower()
+    try:
+        return IMPORTADORES[extension]
+    except KeyError:
+        soportadas = ", ".join(sorted(IMPORTADORES))
+        raise ValueError(
+            f"Formato '{extension}' no soportado. Usar: {soportadas}"
+        )
 
 
 def main():
@@ -14,7 +35,7 @@ def main():
     parser.add_argument(
         "--archivo",
         default=str(DEFAULT_DATOS),
-        help="Ruta al archivo Excel de origen",
+        help="Ruta al archivo de origen (.xlsx, .xls, .csv o .ods)",
     )
     parser.add_argument(
         "--estado",
@@ -28,7 +49,13 @@ def main():
     )
     args = parser.parse_args()
 
-    df = leer_archivo(args.archivo)
+    try:
+        importador = elegir_importador(args.archivo)
+    except ValueError as error:
+        print(error)
+        return
+
+    df = importador.leer_archivo(args.archivo)
     df_filtrado = crear_df_filtrado(df, "Estado", args.estado)
 
     if df_filtrado.empty:
