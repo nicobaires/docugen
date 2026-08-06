@@ -1,0 +1,14 @@
+[project]
+name = "certificado"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.14"
+dependencies = [
+    "flet[all]>=0.86.5",
+    "openpyxl>=3.1.5",
+    "pandas>=3.0.5",
+    "pillow>=12.3.0",
+    "reportlab>=5.0.0",
+    "weasyprint>=69.0",
+]
