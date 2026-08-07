@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8">
+    <title>Certificado de finalización de curso</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <div class="hoja">
+
+      <div class="borde-externo">
+        <div class="borde-interno">
+
+          <div class="esquina esquina-tl"></div>
+          <div class="esquina esquina-tr"></div>
+          <div class="esquina esquina-bl"></div>
+          <div class="esquina esquina-br"></div>
+
+          <header>
+            <p class="institucion">Academia DocuGen</p>
+            <p class="institucion-sub">Centro de Formación Profesional</p>
+          </header>
+
+          <div class="divisor"><span class="rombo"></span></div>
+
+          <h1 class="titulo">CERTIFICADO</h1>
+          <p class="subtitulo">de finalización de curso</p>
+
+          <p class="pre-nombre">Se otorga el presente certificado a</p>
+          <h2 class="nombre">{{ Nombre }}</h2>
+          <p class="documento">DNI N.º <strong>{{ Documento }}</strong></p>
+
+          <p class="cuerpo">
+            por haber completado satisfactoriamente el curso de
+            <span class="curso">{{ Curso }}</span>
+          </p>
+
+          <div class="firma">
+            <div class="firma-item">
+              <p class="linea"></p>
+              <p class="firma-cargo">Dirección Académica</p>
+            </div>
+            <div class="firma-item">
+              <p class="linea"></p>
+              <p class="firma-cargo">Coordinación de Cursos</p>
+            </div>
+          </div>
+
+          <footer>
+            <p class="lugar">{{ Lugar | default('Ciudad Autónoma de Buenos Aires') }}, {{ Fecha | default('') }}</p>
+            <p class="sello">
+              <span class="sello-anillo">
+                <span class="sello-txt">VERIFICADO</span>
+              </span>
+            </p>
+          </footer>
+
+        </div>
+      </div>
+
+    </div>
+  </body>
+</html>

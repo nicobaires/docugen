@@ -33,7 +33,20 @@ uv run docugen --plantilla templates/example/certificate.html --css templates/ex
 uv run docugen --plantilla templates/example/certificate.html --columna Curso --valor Data\ Science
 ```
 
-Hay una plantilla de ejemplo en `templates/example/`. El CSS es opcional.
+Plantillas disponibles:
+
+| Plantilla | Descripción |
+| --- | --- |
+| `templates/example/` | Plantilla básica de ejemplo |
+| `templates/fin_curso/` | Certificado de finalización de curso (clásico, dorado) |
+| `templates/reconocimiento/` | Certificado de reconocimiento (moderno, con franja lateral) |
+
+```bash
+uv run docugen --plantilla templates/fin_curso/certificate.html --css templates/fin_curso/styles.css
+uv run docugen --plantilla templates/reconocimiento/certificate.html --css templates/reconocimiento/styles.css
+```
+
+El CSS es opcional. Las columnas del archivo se usan como variables (p. ej. `{{ Nombre }}`, `{{ Curso }}`); `Lugar` y `Fecha` tienen valores por defecto si no existen en los datos.
 
 ## Interfaz gráfica
 

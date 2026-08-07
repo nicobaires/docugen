@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8">
+    <title>Certificado de reconocimiento</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <div class="hoja">
+
+      <div class="franja">
+        <div class="logo">
+          <span class="logo-anillo">
+            <span class="logo-txt">DG</span>
+          </span>
+        </div>
+        <p class="franja-txt">Academia DocuGen</p>
+      </div>
+
+      <div class="contenido">
+
+        <p class="eyebrow">Certificado de</p>
+        <h1 class="titulo">RECONOCIMIENTO</h1>
+
+        <p class="pre-nombre">Se otorga a</p>
+        <h2 class="nombre">{{ Nombre }}</h2>
+        <p class="documento">DNI N.º {{ Documento }}</p>
+
+        <div class="linea-divisoria"></div>
+
+        <p class="cuerpo">
+          por su destacada participación y compromiso demostrado durante el desarrollo de
+          <span class="destacado">{{ Curso }}</span>
+        </p>
+
+        <p class="detalle">
+          Con una dedicación ejemplar y un desempeño sobresaliente, su contribución
+          ha sido un aporte valioso para nuestra comunidad educativa.
+        </p>
+
+        <div class="firma">
+          <div class="firma-item">
+            <p class="linea"></p>
+            <p class="firma-cargo">Dirección</p>
+          </div>
+          <div class="firma-item">
+            <p class="linea"></p>
+            <p class="firma-cargo">Coordinación</p>
+          </div>
+        </div>
+
+        <footer>
+          <p class="lugar">{{ Lugar | default('Ciudad Autónoma de Buenos Aires') }}, {{ Fecha | default('') }}</p>
+        </footer>
+
+      </div>
+
+    </div>
+  </body>
+</html>

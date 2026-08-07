@@ -1,0 +1,207 @@
+@page {
+  size: A4 landscape;
+  margin: 0;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: "C059", "Liberation Serif", "DejaVu Serif", Georgia, serif;
+  color: #2e2a24;
+}
+
+.hoja {
+  width: 297mm;
+  height: 210mm;
+  background: #fdfbf5;
+}
+
+.borde-externo {
+  position: absolute;
+  top: 10mm;
+  left: 10mm;
+  right: 10mm;
+  bottom: 10mm;
+  border: 1.2mm solid #b08d3e;
+  padding: 2.5mm;
+}
+
+.borde-interno {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border: 0.35mm solid #b08d3e;
+  text-align: center;
+  padding: 12mm 18mm 10mm;
+}
+
+.esquina {
+  position: absolute;
+  width: 12mm;
+  height: 12mm;
+}
+
+.esquina-tl { top: 5mm; left: 5mm; border-top: 1mm solid #b08d3e; border-left: 1mm solid #b08d3e; }
+.esquina-tr { top: 5mm; right: 5mm; border-top: 1mm solid #b08d3e; border-right: 1mm solid #b08d3e; }
+.esquina-bl { bottom: 5mm; left: 5mm; border-bottom: 1mm solid #b08d3e; border-left: 1mm solid #b08d3e; }
+.esquina-br { bottom: 5mm; right: 5mm; border-bottom: 1mm solid #b08d3e; border-right: 1mm solid #b08d3e; }
+
+header { margin-top: 4mm; }
+
+.institucion {
+  margin: 0;
+  font-size: 15pt;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: #8a6d2f;
+  font-weight: bold;
+}
+
+.institucion-sub {
+  margin: 0.8mm 0 0;
+  font-size: 9.5pt;
+  letter-spacing: 1.5px;
+  color: #6b5d42;
+}
+
+.divisor {
+  margin: 4.5mm auto 4mm;
+  width: 55mm;
+  display: flex;
+  align-items: center;
+  gap: 3mm;
+}
+
+.divisor::before,
+.divisor::after {
+  content: "";
+  flex: 1;
+  border-top: 0.3mm solid #b08d3e;
+}
+
+.rombo {
+  width: 2.2mm;
+  height: 2.2mm;
+  background: #b08d3e;
+  transform: rotate(45deg);
+  display: inline-block;
+}
+
+.titulo {
+  margin: 0;
+  font-size: 34pt;
+  letter-spacing: 6px;
+  color: #1f1c17;
+}
+
+.subtitulo {
+  margin: 1mm 0 0;
+  font-size: 12pt;
+  letter-spacing: 2px;
+  color: #8a6d2f;
+  font-style: italic;
+}
+
+.pre-nombre {
+  margin: 7mm 0 2.5mm;
+  font-size: 11.5pt;
+  color: #4a443a;
+}
+
+.nombre {
+  margin: 0;
+  font-size: 26pt;
+  color: #b08d3e;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+.documento {
+  margin: 1.5mm 0 0;
+  font-size: 10.5pt;
+  color: #4a443a;
+}
+
+.cuerpo {
+  margin: 6mm 0 0;
+  font-size: 12pt;
+  color: #4a443a;
+}
+
+.curso {
+  font-weight: bold;
+  font-style: italic;
+  font-size: 14pt;
+  color: #1f1c17;
+}
+
+.firma {
+  position: absolute;
+  bottom: 14mm;
+  left: 22mm;
+  right: 22mm;
+  display: flex;
+  justify-content: space-between;
+}
+
+.firma-item {
+  width: 52mm;
+  text-align: center;
+}
+
+.linea {
+  margin: 0;
+  border-top: 0.35mm solid #2e2a24;
+  padding-top: 1.5mm;
+  font-size: 10.5pt;
+  font-style: italic;
+}
+
+.firma-cargo {
+  margin: 1mm 0 0;
+  font-size: 9pt;
+  letter-spacing: 1px;
+  color: #6b5d42;
+  text-transform: uppercase;
+}
+
+footer {
+  position: absolute;
+  bottom: 8mm;
+  left: 0;
+  right: 0;
+}
+
+.lugar {
+  margin: 0;
+  font-size: 10pt;
+  color: #6b5d42;
+  font-style: italic;
+}
+
+.sello {
+  position: absolute;
+  top: -24mm;
+  right: 14mm;
+  margin: 0;
+}
+
+.sello-anillo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22mm;
+  height: 22mm;
+  border: 0.7mm solid #b08d3e;
+  border-radius: 50%;
+  opacity: 0.85;
+}
+
+.sello-txt {
+  font-size: 7pt;
+  letter-spacing: 2px;
+  color: #8a6d2f;
+  text-transform: uppercase;
+  text-align: center;
+}
