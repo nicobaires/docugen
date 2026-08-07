@@ -46,7 +46,10 @@ class AppDocuGen:
         self.txt_progreso = ft.Text(value="")
         self.lista_errores = ft.ListView(expand=True, spacing=2)
         self.lista_archivos = ft.ListView(expand=True, spacing=2)
-        self.tabla_previa = ft.DataTable(columns=[])
+        self.tabla_previa = ft.DataTable(
+            columns=[ft.DataColumn(ft.Text(""))],
+            visible=False,
+        )
         self.boton_generar = ft.FilledButton(
             "Generar documentos", icon=ft.Icons.DESCRIPTION, on_click=self.generar
         )
@@ -153,6 +156,7 @@ class AppDocuGen:
             )
             for fila in tabla.itertuples(index=False)
         ]
+        self.tabla_previa.visible = True
 
     def filtrar_datos(self):
         columna = self.ddl_columna.value
