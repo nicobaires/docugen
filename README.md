@@ -5,10 +5,11 @@ Automatiza la generación de documentos PDF a partir de datos en Excel, CSV u OD
 ## Uso
 
 ```bash
-python main.py                                    # datos por defecto (data/personas.csv, columna Estado, valor Aprobado)
-python main.py --columna Curso --valor Python     # filtrar por otra columna y valor
-python main.py --hoja Hoja2 --archivo datos.xlsx  # elegir una hoja del libro (xlsx/ods)
-python main.py --info --archivo datos.ods         # ver columnas, cantidad de registros y vista previa
+python main.py                                                    # datos por defecto (data/personas.csv, columna Estado, valor Aprobado)
+python main.py --archivo data/personas.xlsx --salida salida/      # elegir archivo y carpeta de salida
+python main.py --columna Curso --valor Python                     # filtrar por otra columna y valor
+python main.py --hoja Hoja2 --archivo datos.xlsx                  # elegir una hoja del libro (xlsx/ods)
+python main.py --info --archivo datos.ods                         # ver columnas, cantidad de registros y vista previa
 ```
 
 El formato del archivo se detecta automáticamente por extensión: `.xlsx`, `.xls`, `.csv` y `.ods`.
@@ -21,13 +22,18 @@ En vez del generador por defecto (reportlab), se puede renderizar una plantilla 
 
 ```bash
 python main.py --plantilla templates/example/certificate.html --css templates/example/styles.css
+python main.py --plantilla templates/example/certificate.html --columna Curso --valor Data\ Science
 ```
 
 Hay una plantilla de ejemplo en `templates/example/`. El CSS es opcional.
 
 ## Estructura
 
-Ver `ESTRUCTURA.md`.
+- `main.py` — punto de entrada
+- `app/` — código: CLI, importadores (csv/excel/ods), generadores (reportlab/plantillas), servicios
+- `data/` — datos de prueba en los 3 formatos (personas.csv, personas.xlsx, personas.ods)
+- `templates/` — plantillas HTML (Jinja2)
+- `salida/` — documentos generados
 
 ## Roadmap
 
