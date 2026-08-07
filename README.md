@@ -2,27 +2,14 @@
 
 Automatiza la generación de documentos PDF a partir de datos en Excel, CSV u ODS.
 
-## Uso
+## Uso (ejemplo con plantillas)
+
+Para probar el ejemplo de plantilla incluido:
 
 ```bash
-python main.py                                    # datos por defecto (data/personas.csv, columna Estado, valor Aprobado)
-python main.py --columna Curso --valor Python     # filtrar por otra columna y valor
-python main.py --hoja Hoja2 --archivo datos.xlsx  # elegir una hoja del libro (xlsx/ods)
-python main.py --info --archivo datos.ods         # ver columnas, cantidad de registros y vista previa
+python scripts/run_template_example.py --archivo data/personas.csv --salida salida/templates_example
 ```
 
-El formato del archivo se detecta automáticamente por extensión: `.xlsx`, `.xls`, `.csv` y `.ods`.
+Esto renderiza `templates/example/certificate.html` usando `data/personas.csv` y guarda PDFs en `salida/templates_example/`.
 
-Los PDFs se guardan en `salida/` (creada automáticamente).
-
-## Estructura
-
-Ver `ESTRUCTURA.md`.
-
-## Roadmap
-
-Ver [ROADMAP.md](ROADMAP.md).
-
-## Dependencias
-
-Instalar con `uv sync` (reportlab, pandas, openpyxl, flet, weasyprint, pillow).
+(El README original sigue vigente para el uso básico desde `main.py`.)
