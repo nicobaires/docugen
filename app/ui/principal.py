@@ -55,9 +55,6 @@ class AppDocuGen:
         self.picker_plantilla = ft.FilePicker()
         self.picker_css = ft.FilePicker()
         self.picker_salida = ft.FilePicker()
-        page.overlay.extend(
-            [self.picker_datos, self.picker_plantilla, self.picker_css, self.picker_salida]
-        )
 
         if self.configuracion["archivo"]:
             self.txt_archivo.value = self.configuracion["archivo"]
