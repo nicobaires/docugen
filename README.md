@@ -35,6 +35,16 @@ uv run docugen --plantilla templates/example/certificate.html --columna Curso --
 
 Hay una plantilla de ejemplo en `templates/example/`. El CSS es opcional.
 
+## Interfaz gráfica
+
+Interfaz experimental con Flet (en desarrollo):
+
+```bash
+uv run docugen-ui
+```
+
+Permite elegir archivo de datos, hoja, filtro, plantilla/CSS y carpeta de salida, con vista previa, barra de progreso y registro de errores.
+
 ## Configuración
 
 Los últimos valores usados se guardan automáticamente en `config/config.json` y se reutilizan en la próxima ejecución. Los flags explícitos siempre tienen prioridad sobre la configuración guardada.

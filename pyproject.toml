@@ -21,6 +21,7 @@ dependencies = [
 
 [project.scripts]
 docugen = "app.cli:main"
+docugen-ui = "app.ui.principal:main"
 
 [tool.hatch.build.targets.wheel]
 packages = ["app"]

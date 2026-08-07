@@ -11,13 +11,16 @@ def _nombre_archivo_seguro(nombre):
     return re.sub(r"[^\w-]", "_", nombre_limpio)
 
 
-def generar_pdfs_con_plantilla(df, plantilla, carpeta_salida="salida", css=None):
+def generar_pdfs_con_plantilla(df, plantilla, carpeta_salida="salida", css=None, on_progreso=None):
     plantilla = Path(plantilla)
     carpeta = Path(carpeta_salida)
     carpeta.mkdir(parents=True, exist_ok=True)
     archivos_generados = []
+    total = len(df)
 
-    for idx, row in df.iterrows():
+    for i, (idx, row) in enumerate(df.iterrows()):
+        if on_progreso:
+            on_progreso(i + 1, total)
         contexto = {col: ("" if pd.isna(valor) else valor) for col, valor in row.items()}
         nombre = contexto.get("Nombre") or f"fila_{idx}"
         nombre_limpio = _nombre_archivo_seguro(nombre)

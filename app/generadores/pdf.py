@@ -38,12 +38,15 @@ def _crear_estilos():
     return style_titulo, style_cuerpo
 
 
-def generar_pdfs(df, carpeta_salida="salida"):
+def generar_pdfs(df, carpeta_salida="salida", on_progreso=None):
     carpeta = crear_carpeta_salida(carpeta_salida)
     style_titulo, style_cuerpo = _crear_estilos()
     archivos_generados = []
+    total = len(df)
 
-    for row in df.itertuples():
+    for i, row in enumerate(df.itertuples()):
+        if on_progreso:
+            on_progreso(i + 1, total)
         nombre = row.Nombre
         curso = row.Curso
         estado = row.Estado
