@@ -14,6 +14,18 @@ DEFAULTS = {
     "css": None,
 }
 
+CAMPOS_RUTA = ("archivo", "salida", "plantilla", "css")
+
+
+def _resolver_rutas(configuracion):
+    for campo in CAMPOS_RUTA:
+        valor = configuracion.get(campo)
+        if valor:
+            ruta = Path(valor)
+            if not ruta.is_absolute():
+                ruta = PROYECTO / ruta
+            configuracion[campo] = str(ruta.expanduser().resolve())
+
 
 def cargar_configuracion():
     configuracion = dict(DEFAULTS)
@@ -23,10 +35,12 @@ def cargar_configuracion():
         configuracion.update({k: v for k, v in guardada.items() if k in DEFAULTS})
     except (FileNotFoundError, json.JSONDecodeError):
         pass
+    _resolver_rutas(configuracion)
     return configuracion
 
 
 def guardar_configuracion(configuracion):
+    _resolver_rutas(configuracion)
     RUTA_CONFIG.parent.mkdir(parents=True, exist_ok=True)
     with open(RUTA_CONFIG, "w", encoding="utf-8") as archivo:
         json.dump(configuracion, archivo, indent=2, ensure_ascii=False)

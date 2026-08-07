@@ -2,14 +2,22 @@
 
 Automatiza la generación de documentos PDF a partir de datos en Excel, CSV u ODS.
 
+## Requisitos
+
+Python 3.14 y [uv](https://docs.astral.sh/uv/). Instalar las dependencias con:
+
+```bash
+uv sync
+```
+
 ## Uso
 
 ```bash
-python main.py                                                    # datos por defecto (data/personas.csv, columna Estado, valor Aprobado)
-python main.py --archivo data/personas.xlsx --salida salida/      # elegir archivo y carpeta de salida
-python main.py --columna Curso --valor Python                     # filtrar por otra columna y valor
-python main.py --hoja Hoja2 --archivo datos.xlsx                  # elegir una hoja del libro (xlsx/ods)
-python main.py --info --archivo datos.ods                         # ver columnas, cantidad de registros y vista previa
+uv run docugen                                                 # datos por defecto (data/personas.csv, columna Estado, valor Aprobado)
+uv run docugen --archivo data/personas.xlsx --salida salida/   # elegir archivo y carpeta de salida
+uv run docugen --columna Curso --valor Python                  # filtrar por otra columna y valor
+uv run docugen --hoja Hoja2 --archivo datos.xlsx               # elegir una hoja del libro (xlsx/ods)
+uv run docugen --info --archivo datos.ods                      # ver columnas, cantidad de registros y vista previa
 ```
 
 El formato del archivo se detecta automáticamente por extensión: `.xlsx`, `.xls`, `.csv` y `.ods`.
@@ -21,8 +29,8 @@ Los PDFs se guardan en `salida/` (creada automáticamente).
 En vez del generador por defecto (reportlab), se puede renderizar una plantilla HTML (Jinja2) con WeasyPrint, usando las columnas del archivo como variables:
 
 ```bash
-python main.py --plantilla templates/example/certificate.html --css templates/example/styles.css
-python main.py --plantilla templates/example/certificate.html --columna Curso --valor Data\ Science
+uv run docugen --plantilla templates/example/certificate.html --css templates/example/styles.css
+uv run docugen --plantilla templates/example/certificate.html --columna Curso --valor Data\ Science
 ```
 
 Hay una plantilla de ejemplo en `templates/example/`. El CSS es opcional.
@@ -32,12 +40,12 @@ Hay una plantilla de ejemplo en `templates/example/`. El CSS es opcional.
 Los últimos valores usados se guardan automáticamente en `config/config.json` y se reutilizan en la próxima ejecución. Los flags explícitos siempre tienen prioridad sobre la configuración guardada.
 
 ```bash
-python main.py --reset-config   # restablecer la configuración a los valores por defecto
+uv run docugen --reset-config   # restablecer la configuración a los valores por defecto
 ```
 
 ## Estructura
 
-- `main.py` — punto de entrada
+- `main.py` — punto de entrada alternativo (`python main.py`)
 - `app/` — código: CLI, importadores (csv/excel/ods), generadores (reportlab/plantillas), servicios
 - `config/` — configuración guardada (config.json)
 - `data/` — datos de prueba en los 3 formatos (personas.csv, personas.xlsx, personas.ods)
@@ -50,4 +58,4 @@ Ver [ROADMAP.md](ROADMAP.md).
 
 ## Dependencias
 
-Instalar con `uv sync` (reportlab, weasyprint, jinja2, pandas, openpyxl, flet, pillow).
+`uv sync` instala todo: reportlab, weasyprint, jinja2, pandas, openpyxl, flet, pillow.

@@ -1,3 +1,5 @@
+from pathlib import Path
+
 from app.generadores.pdf import generar_pdfs
 from app.generadores.plantilla import generar_pdfs_con_plantilla
 from app.importadores.comunes import crear_df_filtrado, listar_campos
@@ -27,11 +29,16 @@ def mostrar_info(df):
 
 
 def resolver_valores(args, configuracion):
-    return {
-        campo: getattr(args, campo) if getattr(args, campo) is not None
-        else configuracion.get(campo)
-        for campo in CAMPOS_CONFIGURABLES
-    }
+    valores = {}
+    for campo in CAMPOS_CONFIGURABLES:
+        valor = getattr(args, campo)
+        if valor is None:
+            valores[campo] = configuracion.get(campo)
+        elif campo in ("archivo", "salida", "plantilla", "css"):
+            valores[campo] = str(Path(valor).expanduser().resolve())
+        else:
+            valores[campo] = valor
+    return valores
 
 
 def main():
