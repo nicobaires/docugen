@@ -15,6 +15,16 @@ El formato del archivo se detecta automáticamente por extensión: `.xlsx`, `.xl
 
 Los PDFs se guardan en `salida/` (creada automáticamente).
 
+## Plantillas
+
+En vez del generador por defecto (reportlab), se puede renderizar una plantilla HTML (Jinja2) con WeasyPrint, usando las columnas del archivo como variables:
+
+```bash
+python main.py --plantilla templates/example/certificate.html --css templates/example/styles.css
+```
+
+Hay una plantilla de ejemplo en `templates/example/`. El CSS es opcional.
+
 ## Estructura
 
 Ver `ESTRUCTURA.md`.
@@ -25,4 +35,4 @@ Ver [ROADMAP.md](ROADMAP.md).
 
 ## Dependencias
 
-Instalar con `uv sync` (reportlab, pandas, openpyxl, flet, weasyprint, pillow).
+Instalar con `uv sync` (reportlab, weasyprint, jinja2, pandas, openpyxl, flet, pillow).

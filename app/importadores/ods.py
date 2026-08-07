@@ -6,5 +6,5 @@ __all__ = ["leer_archivo", "listar_campos", "crear_df_filtrado", "mostrar_df_cam
 
 
 def leer_archivo(ruta_archivo, hoja=None):
-    df = pd.read_excel(ruta_archivo, sheet_name=hoja, engine="odf")
+    df = pd.read_excel(ruta_archivo, sheet_name=hoja or 0, engine="odf")
     return df

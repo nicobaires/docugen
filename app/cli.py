@@ -1,6 +1,7 @@
 from pathlib import Path
 
 from app.generadores.pdf import generar_pdfs
+from app.generadores.plantilla import generar_pdfs_con_plantilla
 from app.importadores.comunes import crear_df_filtrado, listar_campos
 from app.servicios.ingesta import cargar_datos
 
@@ -50,6 +51,16 @@ def main():
         action="store_true",
         help="Mostrar información del archivo y salir",
     )
+    parser.add_argument(
+        "--plantilla",
+        default=None,
+        help="Plantilla HTML (Jinja2) para generar los documentos",
+    )
+    parser.add_argument(
+        "--css",
+        default=None,
+        help="Hoja de estilos CSS para la plantilla (opcional)",
+    )
     args = parser.parse_args()
 
     try:
@@ -76,7 +87,12 @@ def main():
         )
         return
 
-    archivos = generar_pdfs(df_filtrado, args.salida)
+    if args.plantilla:
+        archivos = generar_pdfs_con_plantilla(
+            df_filtrado, args.plantilla, args.salida, css=args.css
+        )
+    else:
+        archivos = generar_pdfs(df_filtrado, args.salida)
 
     print(f"Se generaron {len(archivos)} documentos en '{args.salida}':")
     for archivo in archivos:

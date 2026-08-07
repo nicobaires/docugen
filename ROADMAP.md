@@ -40,10 +40,10 @@ Separar completamente los datos del diseño.
 
 ### Funcionalidades
 
-* [ ] Plantillas HTML + CSS
-* [ ] Renderizado mediante Jinja2
-* [ ] Conversión HTML → PDF con WeasyPrint
-* [ ] Variables dinámicas
+* [x] Plantillas HTML + CSS
+* [x] Renderizado mediante Jinja2
+* [x] Conversión HTML → PDF con WeasyPrint
+* [x] Variables dinámicas
 
 Ejemplo:
 
