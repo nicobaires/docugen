@@ -59,6 +59,8 @@ class AppDocuGen:
         if self.configuracion["archivo"]:
             self.txt_archivo.value = self.configuracion["archivo"]
 
+        self.construir()
+
     async def elegir_datos(self, e):
         archivos = await self.picker_datos.pick_files(
             file_type=ft.FilePickerFileType.CUSTOM,
