@@ -27,10 +27,19 @@ python main.py --plantilla templates/example/certificate.html --columna Curso --
 
 Hay una plantilla de ejemplo en `templates/example/`. El CSS es opcional.
 
+## Configuración
+
+Los últimos valores usados se guardan automáticamente en `config/config.json` y se reutilizan en la próxima ejecución. Los flags explícitos siempre tienen prioridad sobre la configuración guardada.
+
+```bash
+python main.py --reset-config   # restablecer la configuración a los valores por defecto
+```
+
 ## Estructura
 
 - `main.py` — punto de entrada
 - `app/` — código: CLI, importadores (csv/excel/ods), generadores (reportlab/plantillas), servicios
+- `config/` — configuración guardada (config.json)
 - `data/` — datos de prueba en los 3 formatos (personas.csv, personas.xlsx, personas.ods)
 - `templates/` — plantillas HTML (Jinja2)
 - `salida/` — documentos generados

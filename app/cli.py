@@ -1,13 +1,22 @@
-from pathlib import Path
-
 from app.generadores.pdf import generar_pdfs
 from app.generadores.plantilla import generar_pdfs_con_plantilla
 from app.importadores.comunes import crear_df_filtrado, listar_campos
+from app.servicios.configuracion import (
+    cargar_configuracion,
+    guardar_configuracion,
+    restablecer_configuracion,
+)
 from app.servicios.ingesta import cargar_datos
 
-PROYECTO = Path(__file__).resolve().parent.parent
-DEFAULT_DATOS = PROYECTO / "data" / "personas.csv"
-DEFAULT_SALIDA = PROYECTO / "salida"
+CAMPOS_CONFIGURABLES = [
+    "archivo",
+    "columna",
+    "valor",
+    "hoja",
+    "salida",
+    "plantilla",
+    "css",
+]
 
 
 def mostrar_info(df):
@@ -17,23 +26,31 @@ def mostrar_info(df):
     print(df.head().to_string(index=False))
 
 
+def resolver_valores(args, configuracion):
+    return {
+        campo: getattr(args, campo) if getattr(args, campo) is not None
+        else configuracion.get(campo)
+        for campo in CAMPOS_CONFIGURABLES
+    }
+
+
 def main():
     import argparse
 
     parser = argparse.ArgumentParser(description="Generador de documentos PDF a partir de datos")
     parser.add_argument(
         "--archivo",
-        default=str(DEFAULT_DATOS),
+        default=None,
         help="Ruta al archivo de origen (.xlsx, .xls, .csv o .ods)",
     )
     parser.add_argument(
         "--columna",
-        default="Estado",
+        default=None,
         help="Columna por la que filtrar",
     )
     parser.add_argument(
         "--valor",
-        default="Aprobado",
+        default=None,
         help="Valor a filtrar en la columna",
     )
     parser.add_argument(
@@ -43,13 +60,8 @@ def main():
     )
     parser.add_argument(
         "--salida",
-        default=str(DEFAULT_SALIDA),
+        default=None,
         help="Carpeta donde se guardan los documentos",
-    )
-    parser.add_argument(
-        "--info",
-        action="store_true",
-        help="Mostrar información del archivo y salir",
     )
     parser.add_argument(
         "--plantilla",
@@ -61,10 +73,28 @@ def main():
         default=None,
         help="Hoja de estilos CSS para la plantilla (opcional)",
     )
+    parser.add_argument(
+        "--info",
+        action="store_true",
+        help="Mostrar información del archivo y salir",
+    )
+    parser.add_argument(
+        "--reset-config",
+        action="store_true",
+        help="Restablecer la configuración guardada",
+    )
     args = parser.parse_args()
 
+    if args.reset_config:
+        restablecer_configuracion()
+        print("Configuración restablecida.")
+        return
+
+    configuracion = cargar_configuracion()
+    valores = resolver_valores(args, configuracion)
+
     try:
-        df = cargar_datos(args.archivo, hoja=args.hoja)
+        df = cargar_datos(valores["archivo"], hoja=valores["hoja"])
     except (ValueError, FileNotFoundError) as error:
         print(error)
         return
@@ -74,7 +104,7 @@ def main():
         return
 
     try:
-        df_filtrado = crear_df_filtrado(df, args.columna, args.valor)
+        df_filtrado = crear_df_filtrado(df, valores["columna"], valores["valor"])
     except ValueError as error:
         print(error)
         print("Columnas disponibles:", ", ".join(listar_campos(df)))
@@ -82,18 +112,20 @@ def main():
 
     if df_filtrado.empty:
         print(
-            f"No hay registros con '{args.columna}' = '{args.valor}' "
-            f"en '{args.archivo}'."
+            f"No hay registros con '{valores['columna']}' = '{valores['valor']}' "
+            f"en '{valores['archivo']}'."
         )
         return
 
-    if args.plantilla:
+    if valores["plantilla"]:
         archivos = generar_pdfs_con_plantilla(
-            df_filtrado, args.plantilla, args.salida, css=args.css
+            df_filtrado, valores["plantilla"], valores["salida"], css=valores["css"]
         )
     else:
-        archivos = generar_pdfs(df_filtrado, args.salida)
+        archivos = generar_pdfs(df_filtrado, valores["salida"])
 
-    print(f"Se generaron {len(archivos)} documentos en '{args.salida}':")
+    guardar_configuracion(valores)
+
+    print(f"Se generaron {len(archivos)} documentos en '{valores['salida']}':")
     for archivo in archivos:
         print(f"  - {archivo.name}")

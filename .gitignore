@@ -10,3 +10,4 @@ wheels/
 .venv
 salida/
 ideas_planes/
+config/

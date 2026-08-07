@@ -65,11 +65,11 @@ Guardar automáticamente la configuración del proyecto.
 
 ### Funcionalidades
 
-* [ ] Último archivo utilizado
-* [ ] Última plantilla utilizada
-* [ ] Carpeta de salida
-* [ ] Configuración de filtros
-* [ ] Preferencias del usuario
+* [x] Último archivo utilizado
+* [x] Última plantilla utilizada
+* [x] Carpeta de salida
+* [x] Configuración de filtros
+* [x] Preferencias del usuario
 
 ---
 
