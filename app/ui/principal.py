@@ -27,13 +27,16 @@ class AppDocuGen:
         self.ddl_columna = ft.Dropdown(
             label="Columna de filtro",
             width=260,
-            on_select=self.al_cambiar_filtro,
+            on_select=self.al_cambiar_columna,
         )
-        self.txt_valor = ft.TextField(
+        self.ddl_valor = ft.Dropdown(
             label="Valor de filtro",
-            value=self.configuracion["valor"],
             width=260,
-            on_change=self.al_cambiar_filtro,
+            editable=True,
+            enable_filter=True,
+            enable_search=True,
+            on_select=self.al_cambiar_valor,
+            on_text_change=self.al_cambiar_valor,
         )
         self.ddl_hoja = ft.Dropdown(
             label="Hoja (opcional)",
@@ -152,10 +155,23 @@ class AppDocuGen:
             columna_guardada if columna_guardada in self.df.columns else None
         )
         self.ddl_columna.disabled = False
+        self.actualizar_valores()
+
+    def actualizar_valores(self):
+        columna = self.ddl_columna.value
+        if not columna or columna not in self.df.columns:
+            self.ddl_valor.options = []
+            self.ddl_valor.disabled = True
+            return
+        valores = sorted(self.df[columna].dropna().astype(str).unique().tolist())
+        self.ddl_valor.options = [
+            ft.DropdownOption(key=v, text=v) for v in valores
+        ]
+        self.ddl_valor.disabled = False
 
     def filtrar_datos(self):
         columna = self.ddl_columna.value
-        valor = self.txt_valor.value
+        valor = self.ddl_valor.value
         if not columna or not valor:
             return self.df
         try:
@@ -164,7 +180,12 @@ class AppDocuGen:
             self.agregar_error(str(error))
             return None
 
-    def al_cambiar_filtro(self, e):
+    def al_cambiar_columna(self, e):
+        self.actualizar_valores()
+        self.actualizar_previa()
+        self.page.update()
+
+    def al_cambiar_valor(self, e):
         self.actualizar_previa()
         self.page.update()
 
@@ -191,7 +212,7 @@ class AppDocuGen:
         self.tabla_previa.visible = True
 
         columna = self.ddl_columna.value
-        valor = self.txt_valor.value
+        valor = self.ddl_valor.value
         if columna and valor:
             self.txt_registros.value = (
                 f"Registros: {len(self.df)}   filtrados: {len(filtrado)}"
@@ -212,7 +233,7 @@ class AppDocuGen:
             return
         if df_filtrado.empty:
             self.agregar_error(
-                f"No hay registros con '{self.ddl_columna.value}' = '{self.txt_valor.value}'."
+                f"No hay registros con '{self.ddl_columna.value}' = '{self.ddl_valor.value}'."
             )
             self.page.update()
             return
@@ -267,7 +288,7 @@ class AppDocuGen:
             {
                 "archivo": self.txt_archivo.value,
                 "columna": self.ddl_columna.value,
-                "valor": self.txt_valor.value,
+                "valor": self.ddl_valor.value,
                 "hoja": self.ddl_hoja.value,
                 "salida": self.txt_salida.value,
                 "plantilla": self.txt_plantilla.value or None,
@@ -379,7 +400,7 @@ class AppDocuGen:
                             vertical_alignment=ft.CrossAxisAlignment.CENTER,
                         ),
                         ft.Row(
-                            [self.ddl_hoja, self.ddl_columna, self.txt_valor],
+                            [self.ddl_hoja, self.ddl_columna, self.ddl_valor],
                             vertical_alignment=ft.CrossAxisAlignment.CENTER,
                         ),
                         self.txt_registros,
