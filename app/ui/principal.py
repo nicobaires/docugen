@@ -14,6 +14,7 @@ from app.servicios.ingesta import cargar_datos
 
 FORMATOS_DATOS = ["xlsx", "xls", "csv", "ods"]
 FILAS_PREVISTA = 10
+COLOR_ACENTO = ft.Colors.INDIGO_300
 
 
 class AppDocuGen:
@@ -26,37 +27,55 @@ class AppDocuGen:
         self.ddl_columna = ft.Dropdown(
             label="Columna de filtro",
             width=260,
+            on_select=self.al_cambiar_filtro,
         )
         self.txt_valor = ft.TextField(
             label="Valor de filtro",
             value=self.configuracion["valor"],
             width=260,
+            on_change=self.al_cambiar_filtro,
         )
-        self.ddl_hoja = ft.Dropdown(label="Hoja (opcional)", width=200)
+        self.ddl_hoja = ft.Dropdown(
+            label="Hoja (opcional)",
+            width=200,
+            on_select=self.al_cambiar_hoja,
+        )
         self.txt_plantilla = ft.Text(value="", selectable=True)
-        self.txt_css = ft.Text(value="", selectable=True)
         self.txt_salida = ft.TextField(
             label="Carpeta de salida",
             value=self.configuracion["salida"],
-            width=420,
+            width=400,
         )
         self.txt_resumen = ft.Text(value="", selectable=True)
         self.txt_registros = ft.Text(value="")
-        self.barra_progreso = ft.ProgressBar(value=0, visible=False)
+        self.barra_progreso = ft.ProgressBar(
+            value=0,
+            visible=False,
+            width=420,
+            color=COLOR_ACENTO,
+            bgcolor=ft.Colors.with_opacity(0.15, ft.Colors.INDIGO_100),
+        )
         self.txt_progreso = ft.Text(value="")
-        self.lista_errores = ft.ListView(expand=True, spacing=2)
-        self.lista_archivos = ft.ListView(expand=True, spacing=2)
+        self.lista_errores = ft.ListView(spacing=4)
+        self.lista_archivos = ft.ListView(spacing=2)
         self.tabla_previa = ft.DataTable(
             columns=[ft.DataColumn(ft.Text(""))],
             visible=False,
         )
         self.boton_generar = ft.FilledButton(
-            "Generar documentos", icon=ft.Icons.DESCRIPTION, on_click=self.generar
+            "Generar documentos",
+            icon=ft.Icons.DESCRIPTION,
+            on_click=self.generar,
+            style=ft.ButtonStyle(
+                padding=ft.Padding.symmetric(horizontal=20, vertical=16),
+                elevation=4,
+                shadow_color=ft.Colors.with_opacity(0.5, ft.Colors.INDIGO_900),
+                shape=ft.RoundedRectangleBorder(radius=10),
+            ),
         )
 
         self.picker_datos = ft.FilePicker()
         self.picker_plantilla = ft.FilePicker()
-        self.picker_css = ft.FilePicker()
         self.picker_salida = ft.FilePicker()
 
         if self.configuracion["archivo"]:
@@ -84,15 +103,6 @@ class AppDocuGen:
             self.txt_plantilla.value = archivos[0].path
         self.page.update()
 
-    async def elegir_css(self, e):
-        archivos = await self.picker_css.pick_files(
-            file_type=ft.FilePickerFileType.CUSTOM,
-            allowed_extensions=["css"],
-        )
-        if archivos:
-            self.txt_css.value = archivos[0].path
-        self.page.update()
-
     async def elegir_salida(self, e):
         ruta = await self.picker_salida.get_directory_path()
         if ruta:
@@ -114,7 +124,6 @@ class AppDocuGen:
         self.actualizar_hojas()
         self.actualizar_columna()
         self.actualizar_previa()
-        self.txt_registros.value = f"Registros: {len(self.df)}"
         self.page.update()
 
     def actualizar_hojas(self):
@@ -144,8 +153,31 @@ class AppDocuGen:
         )
         self.ddl_columna.disabled = False
 
+    def filtrar_datos(self):
+        columna = self.ddl_columna.value
+        valor = self.txt_valor.value
+        if not columna or not valor:
+            return self.df
+        try:
+            return crear_df_filtrado(self.df, columna, valor)
+        except ValueError as error:
+            self.agregar_error(str(error))
+            return None
+
+    def al_cambiar_filtro(self, e):
+        self.actualizar_previa()
+        self.page.update()
+
+    def al_cambiar_hoja(self, e):
+        self.cargar_datos_actuales()
+
     def actualizar_previa(self):
-        tabla = self.df.head(FILAS_PREVISTA)
+        if self.df is None:
+            return
+        filtrado = self.filtrar_datos()
+        if filtrado is None:
+            return
+        tabla = filtrado.head(FILAS_PREVISTA)
         self.tabla_previa.columns = [
             ft.DataColumn(ft.Text(str(c), weight=ft.FontWeight.BOLD))
             for c in tabla.columns
@@ -158,16 +190,14 @@ class AppDocuGen:
         ]
         self.tabla_previa.visible = True
 
-    def filtrar_datos(self):
         columna = self.ddl_columna.value
         valor = self.txt_valor.value
-        if not columna or not valor:
-            return self.df
-        try:
-            return crear_df_filtrado(self.df, columna, valor)
-        except ValueError as error:
-            self.agregar_error(str(error))
-            return None
+        if columna and valor:
+            self.txt_registros.value = (
+                f"Registros: {len(self.df)}   filtrados: {len(filtrado)}"
+            )
+        else:
+            self.txt_registros.value = f"Registros: {len(self.df)}"
 
     def generar(self, e):
         self.limpiar_errores()
@@ -206,7 +236,6 @@ class AppDocuGen:
                     df_filtrado,
                     self.txt_plantilla.value,
                     self.txt_salida.value,
-                    css=self.txt_css.value or None,
                     on_progreso=on_progreso,
                 )
             else:
@@ -242,7 +271,7 @@ class AppDocuGen:
                 "hoja": self.ddl_hoja.value,
                 "salida": self.txt_salida.value,
                 "plantilla": self.txt_plantilla.value or None,
-                "css": self.txt_css.value or None,
+                "css": None,
             }
         )
         guardar_configuracion(self.configuracion)
@@ -253,99 +282,204 @@ class AppDocuGen:
                 [
                     ft.Icon(ft.Icons.ERROR_OUTLINE, color=ft.Colors.RED_400),
                     ft.Text(mensaje),
-                ]
+                ],
+                spacing=6,
             )
         )
-        self.lista_errores.controls[-1].visible = True
 
     def limpiar_errores(self):
         self.lista_errores.controls.clear()
 
+    def _boton_secundario(self, texto, icono, on_click):
+        return ft.OutlinedButton(
+            texto,
+            icon=icono,
+            on_click=on_click,
+            style=ft.ButtonStyle(
+                shape=ft.RoundedRectangleBorder(radius=10),
+                side=ft.BorderSide(
+                    color=ft.Colors.with_opacity(0.6, COLOR_ACENTO), width=1
+                ),
+            ),
+        )
+
+    def _caja_ruta(self, texto):
+        return ft.Container(
+            content=texto,
+            expand=True,
+            padding=ft.Padding.symmetric(horizontal=12, vertical=10),
+            border=ft.Border.all(
+                color=ft.Colors.with_opacity(0.3, COLOR_ACENTO), width=1
+            ),
+            border_radius=8,
+        )
+
+    def _seccion(self, titulo, icono, contenido):
+        return ft.Card(
+            elevation=3,
+            shadow_color=ft.Colors.with_opacity(0.35, ft.Colors.INDIGO_900),
+            content=ft.Container(
+                content=ft.Column(
+                    [
+                        ft.Row(
+                            [
+                                ft.Icon(icono, size=18, color=COLOR_ACENTO),
+                                ft.Text(
+                                    titulo,
+                                    size=15,
+                                    weight=ft.FontWeight.BOLD,
+                                ),
+                            ],
+                            spacing=8,
+                        ),
+                        ft.Container(
+                            content=contenido, margin=ft.Margin.only(top=10)
+                        ),
+                    ],
+                    spacing=6,
+                ),
+                padding=16,
+                border_radius=12,
+            ),
+        )
+
     def construir(self):
         self.page.title = "DocuGen"
-        self.page.theme_mode = ft.ThemeMode.LIGHT
-        self.page.padding = 20
-        self.page.window.width = 900
-        self.page.window.height = 780
+        self.page.theme_mode = ft.ThemeMode.DARK
+        self.page.theme = ft.Theme(color_scheme_seed=ft.Colors.INDIGO)
+        self.page.padding = 16
+        self.page.window.width = 1060
+        self.page.window.height = 900
+        self.page.scroll = ft.ScrollMode.AUTO
+
+        self.page.appbar = ft.AppBar(
+            title=ft.Text("DocuGen", size=22, weight=ft.FontWeight.BOLD),
+            center_title=True,
+            bgcolor=ft.Colors.INDIGO_900,
+        )
+
+        if not self.txt_archivo.value:
+            self.txt_registros.value = "Elegí un archivo de datos para comenzar."
 
         self.page.add(
-            ft.Text("DocuGen — Generador de documentos", size=24, weight=ft.FontWeight.BOLD),
-            ft.Row(
-                [
-                    ft.OutlinedButton(
-                        "Elegir archivo de datos",
-                        icon=ft.Icons.FOLDER_OPEN,
-                        on_click=self.elegir_datos,
-                    ),
-                    self.txt_archivo,
-                ],
-                vertical_alignment=ft.CrossAxisAlignment.CENTER,
-            ),
-            ft.Row(
-                [
-                    self.ddl_hoja,
-                    self.ddl_columna,
-                    self.txt_valor,
-                ],
-                vertical_alignment=ft.CrossAxisAlignment.CENTER,
-            ),
-            ft.Row(
-                [
-                    ft.OutlinedButton(
-                        "Elegir plantilla (opcional)",
-                        icon=ft.Icons.ARTICLE,
-                        on_click=self.elegir_plantilla,
-                    ),
-                    self.txt_plantilla,
-                    ft.OutlinedButton(
-                        "Elegir CSS (opcional)",
-                        icon=ft.Icons.PALETTE,
-                        on_click=self.elegir_css,
-                    ),
-                    self.txt_css,
-                ],
-                vertical_alignment=ft.CrossAxisAlignment.CENTER,
-            ),
-            ft.Row(
-                [
-                    self.txt_salida,
-                    ft.OutlinedButton(
-                        "Elegir carpeta",
-                        icon=ft.Icons.CREATE_NEW_FOLDER,
-                        on_click=self.elegir_salida,
-                    ),
-                ],
-                vertical_alignment=ft.CrossAxisAlignment.CENTER,
-            ),
-            self.txt_registros,
-            ft.Container(
-                content=ft.ListView(
-                    controls=[self.tabla_previa],
-                    expand=True,
-                    scroll=ft.ScrollMode.AUTO,
+            self._seccion(
+                "Datos de origen",
+                ft.Icons.FOLDER_OPEN,
+                ft.Column(
+                    [
+                        ft.Row(
+                            [
+                                self._boton_secundario(
+                                    "Elegir archivo",
+                                    ft.Icons.FOLDER_OPEN,
+                                    self.elegir_datos,
+                                ),
+                                self._caja_ruta(self.txt_archivo),
+                            ],
+                            vertical_alignment=ft.CrossAxisAlignment.CENTER,
+                        ),
+                        ft.Row(
+                            [self.ddl_hoja, self.ddl_columna, self.txt_valor],
+                            vertical_alignment=ft.CrossAxisAlignment.CENTER,
+                        ),
+                        self.txt_registros,
+                    ],
+                    spacing=10,
                 ),
-                expand=True,
             ),
-            ft.Row(
-                [
-                    self.boton_generar,
-                    self.barra_progreso,
-                    self.txt_progreso,
-                ],
-                vertical_alignment=ft.CrossAxisAlignment.CENTER,
+            self._seccion(
+                "Plantilla",
+                ft.Icons.ARTICLE,
+                ft.Row(
+                    [
+                        self._boton_secundario(
+                            "Elegir plantilla",
+                            ft.Icons.ARTICLE,
+                            self.elegir_plantilla,
+                        ),
+                        self._caja_ruta(self.txt_plantilla),
+                    ],
+                    vertical_alignment=ft.CrossAxisAlignment.CENTER,
+                ),
             ),
-            self.txt_resumen,
-            ft.Row(
-                [
-                    ft.Text("Errores", weight=ft.FontWeight.BOLD),
-                    ft.Text("Documentos generados", weight=ft.FontWeight.BOLD),
-                ],
-                spacing=100,
+            self._seccion(
+                "Carpeta de salida",
+                ft.Icons.CREATE_NEW_FOLDER,
+                ft.Row(
+                    [
+                        self.txt_salida,
+                        self._boton_secundario(
+                            "Elegir carpeta",
+                            ft.Icons.CREATE_NEW_FOLDER,
+                            self.elegir_salida,
+                        ),
+                    ],
+                    vertical_alignment=ft.CrossAxisAlignment.CENTER,
+                ),
             ),
-            ft.Row(
-                [self.lista_errores, self.lista_archivos],
-                expand=True,
-                vertical_alignment=ft.CrossAxisAlignment.START,
+            self._seccion(
+                "Vista previa",
+                ft.Icons.TABLE_VIEW,
+                ft.Container(
+                    content=ft.ListView(
+                        controls=[self.tabla_previa],
+                        scroll=ft.ScrollMode.AUTO,
+                    ),
+                    height=260,
+                ),
+            ),
+            self._seccion(
+                "Generación",
+                ft.Icons.AUTO_AWESOME,
+                ft.Column(
+                    [
+                        ft.Row(
+                            [
+                                self.boton_generar,
+                                self.barra_progreso,
+                                self.txt_progreso,
+                            ],
+                            vertical_alignment=ft.CrossAxisAlignment.CENTER,
+                        ),
+                        self.txt_resumen,
+                    ],
+                    spacing=8,
+                ),
+            ),
+            self._seccion(
+                "Resultados",
+                ft.Icons.LIST_ALT,
+                ft.Column(
+                    [
+                        ft.Row(
+                            [
+                                ft.Text(
+                                    "Errores",
+                                    weight=ft.FontWeight.BOLD,
+                                    color=ft.Colors.RED_300,
+                                ),
+                                ft.Container(expand=True),
+                                ft.Text(
+                                    "Documentos generados",
+                                    weight=ft.FontWeight.BOLD,
+                                ),
+                            ]
+                        ),
+                        ft.Row(
+                            [
+                                ft.Container(
+                                    content=self.lista_errores, expand=True
+                                ),
+                                ft.VerticalDivider(),
+                                ft.Container(
+                                    content=self.lista_archivos, expand=True
+                                ),
+                            ],
+                            vertical_alignment=ft.CrossAxisAlignment.START,
+                        ),
+                    ],
+                    spacing=8,
+                ),
             ),
         )
 
